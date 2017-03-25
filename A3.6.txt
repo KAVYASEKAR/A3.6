@@ -1,0 +1,24 @@
+1.If 7TB is the available disk space per node (9 disks with 1 TB, 2 disk for operating system etc. were excluded.). Assuming initial data size is 600 TB. How will you estimate the number of data nodes (n)?
+
+Answer:
+
+Number of data nodes = H/d = c*r*S/(1-i)*d 
+
+where, H=c*r*S/(1-i) and
+
+c = average compression ratio. It depends on the type of compression used (Snappy, LZOP, ...) and size of the data. When no compression is used, c=1. 
+r = replication factor. It is usually 3 in a production cluster. 
+S = size of data to be moved to Hadoop. This could be a combination of historical data and incremental data. The incremental data can be daily for example and projected over a period of time (3 years for example). 
+i = intermediate factor. It is usually 1/3 or 1/4. Hadoop's working space dedicated to storing intermediate results of Map phases. 
+d= disk space available per node.
+
+Therefore, number of data nodes = 600/7 = 86 datanodes needed
+
+
+2.Imagine that you are uploading a file of 500MB into HDFS.100MB of data is successfully uploaded into HDFS and another client wants to read the uploaded data while the upload is still in progress. What will happen in such a scenario, will the 100MB of data that is uploaded will be displayed?
+
+Answer:
+
+No the would see no content until the whole file written and closed because, in order to access a file, the request is first sent to the namenode, to obtain metadata relating to the different blocks that compose the file. This metadata will be written by the namenode only after it receives confirmation that all blocks of the file were written successfully.
+Thus, even though the blocks are available, the cient can't see the file until the metadata is updated, which is done only after all blocks are written.
+
